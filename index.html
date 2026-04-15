@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>Awareness — Noumouké</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fafafa;color:#1a1a1a;line-height:1.6}
+
+/* NAV */
+.topnav{background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:100;padding:0 32px;display:flex;align-items:center;height:52px;gap:4px}
+.logo{font-size:15px;font-weight:800;color:#6d28d9;margin-right:20px;white-space:nowrap}
+.tab{background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;color:#9ca3af;padding:15px 12px;border-bottom:3px solid transparent;transition:.15s}
+.tab:hover{color:#555}
+.tab.active{color:#6d28d9;border-bottom-color:#6d28d9}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.streak-b{display:flex;align-items:center;gap:3px;background:#fef3c7;color:#b45309;font-size:11px;font-weight:800;padding:3px 10px;border-radius:16px}
+.xp-b{display:flex;align-items:center;gap:3px;background:#f0ebff;color:#6d28d9;font-size:11px;font-weight:800;padding:3px 10px;border-radius:16px}
+.lvl-b{font-size:11px;color:#888}
+
+/* LAYOUT */
+.page{display:none;padding:24px 32px 80px;max-width:1100px;margin:0 auto}
+.page.active{display:block}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.wide-narrow{display:grid;grid-template-columns:1.3fr .7fr;gap:20px}
+@media(max-width:800px){.two-col,.wide-narrow{grid-template-columns:1fr}.topnav{padding:0 12px}.page{padding:16px 12px 60px}}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:14px}
+.card-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#9ca3af;margin-bottom:10px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:.15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
+.btn-p{background:#6d28d9;color:#fff}
+.btn-s{background:#f0ebff;color:#6d28d9}
+.btn-g{background:#16a34a;color:#fff}
+.btn-pk{background:#db2777;color:#fff}
+.btn-pkl{background:#fdf2f8;color:#db2777;border:1px solid #fbcfe8}
+.btn-o{background:#fff;color:#555;border:1px solid #ddd}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap}
+
+/* BADGES */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px}
+.b-draft{background:#fef3c7;color:#b45309}
+.b-ready{background:#dcfce7;color:#15803d}
+.b-pub{background:#f0ebff;color:#6d28d9}
+.b-auto{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#16a34a;background:#dcfce7;padding:2px 8px;border-radius:10px}
+
+/* BRIEF */
+.brief{background:linear-gradient(135deg,#f0ebff,#fdf2f8);border:1px solid #e0d5ff;border-radius:14px;padding:22px;margin-bottom:20px}
+
+/* GAMIFICATION */
+.xp-row{display:flex;align-items:center;gap:10px;padding:11px 14px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:7px}
+.xp-row.done{background:#f0fdf4;border-color:#bbf7d0}
+.xp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.xp-check{font-size:11px;font-weight:700;color:#16a34a;white-space:nowrap}
+.xp-txt{flex:1;font-size:13px}
+.xp-row.done .xp-txt{color:#9ca3af;text-decoration:line-through}
+.xp-pts{font-size:10px;font-weight:800;color:#6d28d9;background:#f0ebff;padding:2px 7px;border-radius:8px;white-space:nowrap}
+.xp-row.done .xp-pts{color:#16a34a;background:#dcfce7}
+
+/* RING */
+.ring-box{position:relative;width:90px;height:90px}
+.ring-box svg{transform:rotate(-90deg)}
+.ring-lbl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ring-n{font-size:20px;font-weight:900;color:#6d28d9}
+.ring-s{font-size:9px;color:#888;display:block}
+
+/* POST */
+.post-box{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;font-size:15px;color:#333;line-height:1.8;white-space:pre-line}
+.hashtags{color:#6d28d9;font-weight:600}
+
+/* TEXTAREA */
+.ta{width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:80px;line-height:1.6}
+.ta:focus{outline:none;border-color:#6d28d9;box-shadow:0 0 0 3px rgba(109,40,217,.08)}
+
+/* LINKEDIN */
+.li-post{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin-bottom:12px}
+.li-author{font-size:14px;font-weight:700;margin-bottom:1px}
+.li-role{font-size:12px;color:#888;margin-bottom:10px}
+.li-body{font-size:13px;color:#333;line-height:1.7;margin-bottom:12px;white-space:pre-line}
+
+/* SPARKS */
+.spark{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px}
+.spark.hot{border-left:4px solid #d97706;background:#fffbeb}
+.spark-src{font-size:11px;color:#6d28d9;font-weight:600;cursor:pointer;text-decoration:underline}
+.spark-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px}
+
+/* NEWSLETTER */
+.nl-step{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:8px}
+.nl-n{width:28px;height:28px;border-radius:50%;background:#fdf2f8;color:#db2777;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nl-n.ok{background:#dcfce7;color:#16a34a}
+.nl-preview{background:#fff;border:2px dashed #e5e7eb;border-radius:12px;min-height:360px;padding:20px}
+
+/* FILTERS */
+.filters{display:flex;gap:6px;margin-bottom:14px}
+.fil{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid #e5e7eb;background:#fff;color:#888;cursor:pointer;transition:.15s}
+.fil.active{background:#6d28d9;color:#fff;border-color:#6d28d9}
+
+/* PROGRESS */
+.pbar{height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden}
+.pfill{height:100%;border-radius:3px;transition:width .4s}
+
+/* ANALYTICS */
+.stat-c{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;text-align:center}
+.stat-n{font-size:26px;font-weight:900;margin-bottom:2px}
+.stat-l{font-size:11px;color:#888}
+.four-g{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.insight{background:#f7f5ff;border:1px solid #e0d5ff;border-radius:10px;padding:14px;margin-bottom:8px;font-size:13px;color:#444;line-height:1.6}
+.insight strong{color:#6d28d9}
+@media(max-width:800px){.four-g{grid-template-columns:1fr 1fr}}
+
+/* FMT */
+.fmt-g{display:flex;gap:8px;margin-bottom:14px}
+.fmt-i{flex:1;text-align:center;padding:10px 6px;border-radius:10px;background:#fafafa;border:1px solid #eee}
+.fmt-i.active{background:#fdf2f8;border-color:#db277744}
+.fmt-i .emoji{font-size:20px}
+.fmt-i .month{font-size:12px;font-weight:700;color:#555}
+.fmt-i.active .month{color:#db2777}
+.fmt-i .name{font-size:10px;color:#aaa}
+
+/* ACTIVITY LOG */
+.log-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f5f5f5;font-size:13px}
+.log-item:last-child{border:none}
+
+/* FAQ FLOAT */
+.faq-btn{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:#6d28d9;color:#fff;border:none;border-radius:50%;font-size:22px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(109,40,217,.3);z-index:200;transition:.15s}
+.faq-btn:hover{background:#5b21b6;transform:scale(1.05)}
+.faq-panel{display:none;position:fixed;bottom:88px;right:24px;width:340px;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,.12);z-index:200}
+.faq-panel.open{display:block}
+.faq-qa{padding:8px 12px;border-radius:8px;background:#f0ebff;margin-bottom:6px;font-size:12px;font-weight:600;color:#6d28d9;cursor:pointer;transition:.15s}
+.faq-qa:hover{background:#e8e0ff}
+
+.footer{text-align:center;font-size:11px;color:#ccc;padding:30px 0}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+<div class="logo">🎯 Awareness</div>
+<button class="tab active" onclick="go('suivi',this)">Suivi</button>
+<button class="tab" onclick="go('post',this)">Weekly Post</button>
+<button class="tab" onclick="go('pouls',this)">Le Pouls</button>
+<button class="tab" onclick="go('linkedin',this)">LinkedIn</button>
+<button class="tab" onclick="go('activity',this)">Your Activity</button>
+<div class="nav-r">
+<div class="streak-b" id="nav-streak">🔥 3j</div>
+<div class="xp-b" id="nav-xp">⭐ 85 XP</div>
+<div class="lvl-b" id="nav-lvl">🌱 Éclaireur</div>
+</div>
+</nav>
+
+<!-- ══════════════════════ SUIVI ══════════════════════ -->
+<div class="page active" id="p-suivi">
+<div class="brief">
+<div style="display:flex;justify-content:space-between;align-items:flex-start">
+<div style="flex:1">
+<h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Bonjour Noumouké 👋</h2>
+<p style="font-size:14px;color:#555">Mercredi 16 avril — ton post est prêt, publication à 10h. 6 actions aujourd'hui pour <strong>60 XP</strong>.</p>
+</div>
+<div class="ring-box">
+<svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#e5e7eb" stroke-width="7"/><circle cx="45" cy="45" r="38" fill="none" stroke="#6d28d9" stroke-width="7" stroke-dasharray="239" id="ring-c" stroke-dashoffset="179" stroke-linecap="round"/></svg>
+<div class="ring-lbl"><span class="ring-n" id="ring-pct">25</span><span class="ring-s">% semaine</span></div>
+</div>
+</div>
+</div>
+
+<div class="two-col">
+<div>
+<div class="card-label">🔥 Aujourd'hui — <span id="day-xp">0</span> / 60 XP</div>
+<div class="xp-row done"><div class="xp-dot" style="background:#16a34a"></div><div class="xp-check">✓ Agent</div><span class="xp-txt">Valider le hook du post</span><span class="xp-pts">+5 XP</span></div>
+<div class="xp-row done"><div class="xp-dot" style="background:#16a34a"></div><div class="xp-check">✓ Agent</div><span class="xp-txt">Rédiger le draft complet</span><span class="xp-pts">+10 XP</span></div>
+<div class="xp-row" id="act-pub"><div class="xp-dot" style="background:#d97706"></div><span class="xp-txt">Publier le post à 10h</span><span class="xp-pts">+20 XP</span></div>
+<div class="xp-row" id="act-reply"><div class="xp-dot" style="background:#d97706"></div><span class="xp-txt">Répondre aux commentaires (golden hour)</span><span class="xp-pts">+10 XP</span></div>
+<div class="xp-row" id="act-comment"><div class="xp-dot" style="background:#6d28d9"></div><span class="xp-txt">Commenter 3 posts ciblés</span><span class="xp-pts">+10 XP</span></div>
+<div class="xp-row" id="act-connect"><div class="xp-dot" style="background:#6d28d9"></div><span class="xp-txt">Ajouter 3 connexions avec note</span><span class="xp-pts">+5 XP</span></div>
+
+<div class="card-label" style="margin-top:18px">📋 En suspens</div>
+<div class="xp-row" style="opacity:.55"><div class="xp-dot" style="background:#e5e7eb"></div><span class="xp-txt">Choisir le sujet du Radar (newsletter)</span><span class="xp-pts">+10 XP</span></div>
+<div class="xp-row" style="opacity:.55"><div class="xp-dot" style="background:#e5e7eb"></div><span class="xp-txt">Reviewer les sparks de la semaine</span><span class="xp-pts">+5 XP</span></div>
+</div>
+
+<div>
+<!-- Progression -->
+<div class="card">
+<div class="card-label">🏆 Progression</div>
+<div style="text-align:center;margin-bottom:14px">
+<div style="font-size:36px">🌱</div>
+<div style="font-size:15px;font-weight:800;color:#6d28d9" id="lvl-display">Éclaireur</div>
+<div style="font-size:12px;color:#888">85 / 200 XP pour le prochain niveau</div>
+<div class="pbar" style="margin-top:8px"><div class="pfill" style="width:42%;background:#6d28d9" id="lvl-bar"></div></div>
+</div>
+<div style="font-size:12px;color:#888;display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;justify-content:space-between"><span>🌱 Éclaireur</span><span>0 XP</span></div>
+<div style="display:flex;justify-content:space-between"><span>🌿 Contributeur</span><span>200 XP</span></div>
+<div style="display:flex;justify-content:space-between"><span>🌳 Influenceur</span><span>500 XP</span></div>
+<div style="display:flex;justify-content:space-between"><span>⭐ Leader d'opinion</span><span>1000 XP</span></div>
+</div>
+</div>
+
+<!-- Semaine -->
+<div class="card">
+<div class="card-label">📅 Cette semaine</div>
+<div style="display:flex;gap:6px;margin-bottom:10px">
+<div style="flex:1;text-align:center;padding:7px;border-radius:8px;background:#dcfce7;font-size:11px;font-weight:700;color:#16a34a">Lun ✓</div>
+<div style="flex:1;text-align:center;padding:7px;border-radius:8px;background:#dcfce7;font-size:11px;font-weight:700;color:#16a34a">Mar ✓</div>
+<div style="flex:1;text-align:center;padding:7px;border-radius:8px;background:#fef3c7;font-size:11px;font-weight:700;color:#b45309;border:2px solid #fbbf24">Mer</div>
+<div style="flex:1;text-align:center;padding:7px;border-radius:8px;background:#fafafa;font-size:11px;color:#ccc">Jeu</div>
+<div style="flex:1;text-align:center;padding:7px;border-radius:8px;background:#fafafa;font-size:11px;color:#ccc">Ven</div>
+</div>
+<div style="font-size:12px;color:#888">Streak : <strong style="color:#b45309">🔥 3 jours</strong></div>
+</div>
+
+<div class="card">
+<div class="card-label">⚡ Derniers sparks</div>
+<div style="font-size:13px;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;gap:6px;align-items:center"><span style="background:#fef3c7;color:#b45309;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">HOT</span><span>40% des scale-ups bloquent à l'onboarding analytics</span></div>
+<div style="display:flex;gap:6px;align-items:center"><span style="background:#fef3c7;color:#b45309;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">HOT</span><span>Coût caché d'un mauvais funnel</span></div>
+<div>Les équipes Product sous-utilisent l'A/B testing</div>
+</div>
+<span class="b-auto" style="margin-top:8px">🤖 Collecte auto · lundi 8h</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ══════════════════════ WEEKLY POST ══════════════════════ -->
+<div class="page" id="p-post">
+<div class="wide-narrow">
+<div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<div class="card-label" style="margin:0">📝 Post S16 — Behind the scenes</div>
+<span class="badge b-draft" id="post-status">Brouillon</span>
+</div>
+
+<div class="post-box" id="post-body">45 minutes. Par client.
+Avant chaque call.
+
+Cette semaine, 30 secondes.
+
+Pas parce que l'IA est magique.
+Parce que j'ai enfin formalisé ce que je cherchais vraiment — et demandé à un agent de le faire à ma place.
+
+On est en AI Week chez Amplitude. Une semaine pour construire ses propres outils, pas ceux des clients.
+
+J'ai construit un agent qui agrège automatiquement : données CRM, historique d'échanges, signaux d'usage produit — en un brief structuré avant chaque meeting.
+
+3 apprentissages en 2 jours :
+
+→ Le vrai gain de l'IA, c'est pas la recherche. C'est la re-contextualisation.
+→ Un outil IA reproduit ta logique à l'échelle. Si ta logique est floue, le résultat l'est aussi.
+→ La barrière n'est pas technique. Elle est mentale.
+
+Ce que ça m'a appris sur mes clients Product & Data : l'adoption d'un outil suit exactement la même logique.
+
+Les équipes qui tirent le plus de valeur de leurs données ne sont pas les plus "data-driven" au départ. Ce sont celles qui ont osé formaliser ce qu'elles cherchaient vraiment.
+
+Vous automatiseriez quoi en premier si vous aviez une semaine ?
+
+<span class="hashtags">#ProductAnalytics #IA</span></div>
+<div style="display:flex;gap:14px;margin-top:6px;font-size:12px;color:#888"><span>~1 050 car.</span><span>2 hashtags</span><span>Hook 26 car. ✅</span><span>📅 Mer 16 · 10h</span></div>
+
+<!-- Input modifications -->
+<div class="card" style="margin-top:14px">
+<div class="card-label">💬 Demande une modification</div>
+<textarea class="ta" id="post-prompt" placeholder="Dis-moi ce que tu veux changer... Ex: 'Plus percutant', 'Raccourcis à 800 car', 'Change le hook', 'Ajoute un angle client'"></textarea>
+<div class="btn-row" style="margin-top:8px">
+<button class="btn btn-p" onclick="applyPostMod()">✏️ Appliquer</button>
+<button class="btn btn-s" onclick="showPostCheck()">👁️ Checklist pré-pub</button>
+<button class="btn btn-g" onclick="publishPost()">🚀 Publier sur LinkedIn</button>
+</div>
+<div id="post-fb" style="margin-top:12px"></div>
+</div>
+</div>
+
+<div>
+<div class="card">
+<div class="card-label">📅 Planning</div>
+<div style="font-size:13px;line-height:2.2">
+<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f5f5f5;padding:3px 0"><span><strong>Mer 16</strong> · 10h</span><span class="badge b-draft">Ce post</span></div>
+<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f5f5f5;padding:3px 0;color:#aaa"><span>Jeu 17 · 8h30</span><span style="font-size:10px">À rédiger</span></div>
+<div style="display:flex;justify-content:space-between;padding:3px 0;color:#aaa"><span>Mar 22 · 8h30</span><span style="font-size:10px">À rédiger</span></div>
+</div>
+</div>
+
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div class="card-label" style="margin:0">⚡ Sparks</div><span class="b-auto">🤖 Lundi</span></div>
+<div style="font-size:13px;display:flex;flex-direction:column;gap:6px">
+<div style="padding:7px 10px;background:#fffbeb;border-left:3px solid #d97706;border-radius:0 8px 8px 0">40% des scale-ups ne dépassent pas l'onboarding analytics<br><a href="#" style="font-size:11px;color:#6d28d9" onclick="go('activity',document.querySelectorAll('.tab')[4]);return false">Glean VO ↗</a></div>
+<div style="padding:7px 10px;border-left:3px solid #0891b2;border-radius:0 8px 8px 0">Les équipes Product sous-utilisent l'A/B testing<br><a href="#" style="font-size:11px;color:#6d28d9" onclick="go('activity',document.querySelectorAll('.tab')[4]);return false">Granola ↗</a></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ══════════════════════ LE POULS ══════════════════════ -->
+<div class="page" id="p-pouls">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px">
+<div><h2 style="font-size:18px;font-weight:800">📬 Le Pouls</h2><p style="font-size:13px;color:#888">Newsletter mensuelle · Lancement juin 2026</p></div>
+<div style="font-size:12px;color:#888">Envoi via <strong>Outreach</strong> · Contacts : landing Lovable + LinkedIn opt-in</div>
+</div>
+
+<div class="fmt-g">
+<div class="fmt-i active"><div class="emoji">📡</div><div class="month">Juin</div><div class="name">Le Radar</div></div>
+<div class="fmt-i"><div class="emoji">🔬</div><div class="month">Juil.</div><div class="name">L'Autopsie</div></div>
+<div class="fmt-i"><div class="emoji">#️⃣</div><div class="month">Août</div><div class="name">Le Chiffre</div></div>
+<div class="fmt-i"><div class="emoji">📋</div><div class="month">Sept.</div><div class="name">Le Briefing</div></div>
+</div>
+
+<div class="two-col">
+<div>
+<div class="card-label">Workflow — Le Radar · Juin</div>
+<div class="nl-step" id="ns1"><div class="nl-n">1</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Choisir le sujet</div></div><button class="btn btn-pk" onclick="nlAct('sujet')">💡 Choisir</button></div>
+<div class="nl-step" id="ns2" style="opacity:.5"><div class="nl-n">2</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Collecter les données</div><div style="font-size:11px;color:#888">Agent : Glean + Granola + Web</div></div><button class="btn btn-pkl" disabled onclick="nlAct('collect')">🔎 Lancer</button></div>
+<div class="nl-step" id="ns3" style="opacity:.4"><div class="nl-n">3</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Rédiger le contenu</div></div><button class="btn btn-pkl" disabled onclick="nlAct('write')">✏️ Rédiger</button></div>
+<div class="nl-step" id="ns4" style="opacity:.4"><div class="nl-n">4</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Prototyper sur Lovable</div></div><button class="btn btn-pkl" disabled onclick="nlAct('proto')">🎨 Proto</button></div>
+<div class="nl-step" id="ns5" style="opacity:.4"><div class="nl-n">5</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Configurer envoi Outreach</div></div><button class="btn btn-pkl" disabled onclick="nlAct('outreach')">📧 Config</button></div>
+<div class="pbar" style="margin-top:12px"><div class="pfill" id="nl-prog" style="width:10%;background:linear-gradient(90deg,#6d28d9,#db2777)"></div></div>
+<p style="font-size:11px;color:#aaa;margin-top:4px" id="nl-txt">10% — Étape 1</p>
+<div id="nl-fb" style="margin-top:12px"></div>
+</div>
+
+<div>
+<div class="card-label">👁️ Preview</div>
+<div class="nl-preview" id="nl-prev">
+<div style="text-align:center;color:#bbb;margin-top:80px">
+<div style="font-size:36px;margin-bottom:8px">📡</div>
+<div style="font-size:15px;font-weight:700;color:#999">Le Radar — Juin 2026</div>
+<div style="font-size:12px;margin-top:4px">La preview se construit au fur et à mesure</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ══════════════════════ LINKEDIN ══════════════════════ -->
+<div class="page" id="p-linkedin">
+<h2 style="font-size:18px;font-weight:800;margin-bottom:4px">LinkedIn Activity</h2>
+<p style="font-size:13px;color:#888;margin-bottom:16px">Posts à commenter et connexions à ajouter · <span class="b-auto">🤖 Jeudi 8h</span></p>
+
+<div class="two-col">
+<!-- Posts -->
+<div>
+<div class="card-label">💬 Posts à commenter — <span id="li-set-label">Set 1/2</span></div>
+<div id="li-posts"></div>
+<button class="btn btn-o" style="margin-top:6px" onclick="cyclePosts()">🔄 Autres posts</button>
+</div>
+
+<!-- Connexions -->
+<div>
+<div class="card-label">🤝 Connexions — <span id="cx-set-label">Set 1/2</span></div>
+<div id="li-cx"></div>
+<button class="btn btn-o" style="margin-top:6px" onclick="cycleCx()">🔄 Autres profils</button>
+</div>
+</div>
+</div>
+
+<!-- ══════════════════════ YOUR ACTIVITY ══════════════════════ -->
+<div class="page" id="p-activity">
+<h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Your Activity</h2>
+<p style="font-size:13px;color:#888;margin-bottom:16px">Bibliothèque d'inspiration + historique</p>
+
+<div class="two-col">
+<div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<div class="card-label" style="margin:0">📚 Bibliothèque d'inspiration</div>
+<span class="b-auto">🤖 Mise à jour auto · lundi 8h</span>
+</div>
+<div class="filters">
+<div class="fil active" onclick="filterSparks('all',this)">Tout</div>
+<div class="fil" onclick="filterSparks('interne',this)">Interne</div>
+<div class="fil" onclick="filterSparks('externe',this)">Externe</div>
+<div class="fil" onclick="filterSparks('tendance',this)">Tendances</div>
+<div class="fil" onclick="filterSparks('social',this)">Réseaux</div>
+</div>
+<div id="sparks-list"></div>
+</div>
+
+<div>
+<div class="card-label">📊 Analytics rapide</div>
+<div class="four-g" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+<div class="stat-c"><div class="stat-n" style="color:#6d28d9">847</div><div class="stat-l">Abonnés LI</div></div>
+<div class="stat-c"><div class="stat-n" style="color:#16a34a">4.2%</div><div class="stat-l">Engagement</div></div>
+<div class="stat-c"><div class="stat-n" style="color:#0891b2">2 340</div><div class="stat-l">Impressions</div></div>
+<div class="stat-c"><div class="stat-n" style="color:#d97706">23</div><div class="stat-l">Vues profil</div></div>
+</div>
+
+<div class="card">
+<div class="card-label">🔍 Insights</div>
+<div class="insight"><strong>Hook performant :</strong> "45 minutes. Par client." — format chiffre + rupture = scroll-stop élevé.</div>
+<div class="insight"><strong>Audience qualifiée :</strong> 68% des vues de profil viennent de VP/Director/Head of — ta cible exacte.</div>
+<div class="insight"><strong>Commentaires = visibilité :</strong> Tes commentaires sur des posts ciblés génèrent +8 vues de profil en moyenne.</div>
+</div>
+
+<div class="card">
+<div class="card-label">📜 Historique</div>
+<div class="log-item"><span style="color:#555">Post S16 rédigé</span><span style="font-size:11px;color:#aaa">15 avril</span></div>
+<div class="log-item"><span style="color:#555">5 sparks collectés (Glean, Granola)</span><span style="font-size:11px;color:#aaa">14 avril</span></div>
+<div class="log-item"><span style="color:#555">Architecture V2 validée</span><span style="font-size:11px;color:#aaa">14 avril</span></div>
+<div class="log-item"><span style="color:#555">Skill LinkedIn créé</span><span style="font-size:11px;color:#aaa">14 avril</span></div>
+<div class="log-item"><span style="color:#555">Profil LinkedIn optimisé</span><span style="font-size:11px;color:#aaa">14 avril</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- FAQ BUTTON -->
+<button class="faq-btn" onclick="toggleFaq()">?</button>
+<div class="faq-panel" id="faq-panel">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<div style="font-size:15px;font-weight:800">Support Awareness</div>
+<button style="background:none;border:none;font-size:18px;cursor:pointer;color:#aaa" onclick="toggleFaq()">✕</button>
+</div>
+<p style="font-size:12px;color:#888;margin-bottom:14px">Pour toute modification ou question, écris dans le chat Cowork "Construction & Exécution".</p>
+<div class="faq-qa" onclick="copyFaq('Modifie mon post LinkedIn : [ta demande]')">✏️ Modifier mon post</div>
+<div class="faq-qa" onclick="copyFaq('Propose de nouveaux posts LinkedIn à commenter cette semaine')">💬 Nouvelles suggestions LinkedIn</div>
+<div class="faq-qa" onclick="copyFaq('Avance sur la prochaine étape du Pouls')">📬 Avancer Le Pouls</div>
+<div class="faq-qa" onclick="copyFaq('Scanne les sources pour de nouveaux sparks')">🔍 Scanner les sources</div>
+<div class="faq-qa" onclick="copyFaq('Mets à jour mes objectifs awareness')">🎯 Changer mes objectifs</div>
+<div id="faq-toast" style="display:none;margin-top:8px;padding:8px;background:#dcfce7;border-radius:6px;font-size:11px;color:#16a34a;font-weight:700;text-align:center">✅ Copié — colle dans Cowork !</div>
+</div>
+
+<script>
+// ── STATE ──
+let XP=85,streak=3,postSet=0,cxSet=0,chosenNl=null,nlStage=0;
+
+const NL_TOPICS={
+1:{
+title:"L'écosystème Product Analytics en France",
+sub:"Mapping, tendances, trous dans la raquette",
+dataStats:"→ 12 verified outcomes Glean\n→ 5 insights Granola (meetings clients)\n→ 8 data points web (Gartner, OpenView, Reforge)",
+sections:[
+{icon:"🗺️",h:"Le paysage",p:"64% des scale-ups françaises ont un outil de Product Analytics. 23% l'utilisent au-delà du suivi de pages vues. Le fossé entre \"avoir un outil\" et \"prendre des décisions avec\" n'a jamais été aussi large."},
+{icon:"📊",h:"Le signal faible",p:"L'expérimentation A/B : 40% des équipes produit l'ont activée, 8% l'utilisent vraiment. Le reste ? Des dashboards qu'on construit mais que personne ne consulte après la première semaine."},
+{icon:"🎯",h:"Le trou dans la raquette",p:"Data et Product en silos dans 70% des cas. Le \"single source of truth\" reste un mythe dans la plupart des scale-ups françaises. Les équipes qui cassent ce silo ont un cycle de décision 3x plus rapide."}
+]},
+2:{
+title:"La maturité data des scale-ups françaises",
+sub:"Par stade, blocages, exemples concrets",
+dataStats:"→ 9 cas clients anonymisés Glean\n→ 4 transcripts Granola (VP Product/Data)\n→ 6 benchmarks web (McKinsey Digital, Bessemer)",
+sections:[
+{icon:"📈",h:"Les 4 stades",p:"Stade 1 : Google Analytics et intuition. Stade 2 : un outil, des dashboards, personne ne regarde. Stade 3 : questions → réponses en 48h. Stade 4 : expérimentation systématique. 70% des scale-ups françaises sont bloquées entre le stade 2 et 3."},
+{icon:"🚧",h:"Le mur invisible",p:"Le blocage n°1 n'est pas technique : c'est organisationnel. Les équipes data livrent des dashboards, les PM veulent des réponses. Tant que personne ne traduit, la data reste un coût et non un levier."},
+{icon:"💡",h:"Ceux qui ont craqué le code",p:"3 patterns communs chez les scale-ups qui passent au stade 4 : un \"data translator\" dans l'équipe produit, des review meetings basées sur l'expérimentation (pas les métriques), et un North Star Metric validée par la rétention."}
+]},
+3:{
+title:"Product-Led vs Sales-Led : la data comme arbitre",
+sub:"Comment les meilleures équipes tranchent",
+dataStats:"→ 7 win/loss analyses Glean\n→ 6 insights Granola (CSA + AE meetings)\n→ 5 études web (OpenView PLG Index, Lenny's Newsletter)",
+sections:[
+{icon:"⚔️",h:"Le faux débat",p:"PLG vs SLG n'est pas un choix binaire. 78% des scale-ups SaaS qui surperforment utilisent un modèle hybride. La question n'est pas \"quel motion\" mais \"quelle data pour décider quand basculer\"."},
+{icon:"📊",h:"Les métriques qui tranchent",p:"PQL score > MQL score pour 60% des deals mid-market. Mais le signal le plus prédictif : le nombre d'utilisateurs actifs AVANT le premier call commercial. Les meilleures équipes tracent ce ratio."},
+{icon:"🔑",h:"Le playbook hybride",p:"Activation self-serve pour l'adoption → signal d'usage pour le timing commercial → expansion data-driven. Les équipes qui instrumentent ce parcours ont un cycle de vente 40% plus court."}
+]}
+};
+
+// ── NAV ──
+function go(id,tab){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+document.getElementById('p-'+id).classList.add('active');
+tab.classList.add('active');
+}
+
+// ── POST ACTIONS ──
+function applyPostMod(){
+const v=document.getElementById('post-prompt').value.trim();
+if(!v){document.getElementById('post-fb').innerHTML='<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:12px;font-size:13px;color:#b45309">Écris ta demande dans le champ ci-dessus.</div>';return}
+const prompt='Modifie mon post LinkedIn : '+v;
+navigator.clipboard.writeText(prompt).then(()=>{
+showToast('📋 Demande copiée !<br><span style="font-size:12px;font-weight:400;opacity:.8">Colle-la dans le chat Cowork pour que je modifie le post</span>');
+document.getElementById('post-fb').innerHTML='<div style="background:#f0ebff;border:1px solid #e0d5ff;border-radius:8px;padding:14px;font-size:13px;color:#6d28d9"><strong>📋 Demande copiée dans le presse-papier :</strong><br><span style="background:#e8e0ff;padding:4px 8px;border-radius:6px;display:inline-block;margin-top:6px">"'+prompt+'"</span><br><br>👉 <strong>Colle-la dans le chat Cowork</strong> (ce chat-ci) pour que je modifie le post.</div>';
+document.getElementById('post-prompt').value='';
+});
+}
+
+function showPostCheck(){
+document.getElementById('post-fb').innerHTML=`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px">
+<p style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:8px">👁️ Checklist pré-publication</p>
+<div style="font-size:13px;line-height:2.2"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"> Hook < 49 car./ligne</label>
+<label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"> Aucune tournure IA</label>
+<label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"> Zéro lien externe</label>
+<label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"> Max 2 hashtags</label>
+<label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"> Ça sonne comme moi</label></div>
+<button class="btn btn-g" style="margin-top:10px" onclick="markReady()">✅ Tout bon</button></div>`;
+}
+
+function markReady(){
+document.getElementById('post-status').textContent='Prêt';
+document.getElementById('post-status').className='badge b-ready';
+document.getElementById('post-fb').innerHTML='<div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:8px;padding:12px;font-size:13px;color:#15803d;font-weight:700">✅ Post marqué "Prêt" — publie mercredi 10h !</div>';
+}
+
+function publishPost(){
+if(!confirm('🚀 Publier ce post sur LinkedIn ?\n\nLe post sera envoyé à l\'agent pour publication immédiate.')) return;
+document.getElementById('post-fb').innerHTML='<div style="background:#f0ebff;border:1px solid #e0d5ff;border-radius:8px;padding:14px;font-size:13px;color:#6d28d9"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:16px;height:16px;border:3px solid #6d28d9;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite"></div><strong>L\'agent publie ton post sur LinkedIn...</strong></div><p style="color:#888">Tu seras notifiée quand c\'est fait.</p></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
+setTimeout(()=>{
+document.getElementById('post-fb').innerHTML='<div style="background:#f0ebff;border:1px solid #e0d5ff;border-radius:8px;padding:14px;font-size:13px;color:#6d28d9"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:16px;height:16px;border:3px solid #6d28d9;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite"></div><strong>Vérification en cours...</strong></div><p style="color:#888">L\'agent vérifie que le post est bien en ligne.</p></div>';
+},3000);
+setTimeout(()=>{
+document.getElementById('post-status').textContent='Publié ✓';
+document.getElementById('post-status').className='badge b-pub';
+document.getElementById('post-fb').innerHTML='<div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:8px;padding:14px;font-size:13px;color:#15803d"><strong>✅ Post publié sur LinkedIn !</strong><br>L\'agent a confirmé que le post est en ligne. Pense à répondre aux commentaires dans la golden hour (60-90 min).</div>';
+addXP(20);
+},6000);
+}
+
+// ── NEWSLETTER ──
+function nlAct(type){
+const fb=document.getElementById('nl-fb');
+const t=chosenNl?NL_TOPICS[chosenNl]:NL_TOPICS[1];
+const required={sujet:0,collect:1,write:2,proto:3,outreach:4};
+const stepNames={sujet:'—',collect:'Choisir le sujet',write:'Collecter les données',proto:'Rédiger le contenu',outreach:'Prototyper sur Lovable'};
+if(required[type]>nlStage){
+fb.innerHTML=`<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px;font-size:13px;color:#b45309"><strong>⚠️ Étape précédente requise</strong><br>Tu dois d'abord finaliser : <strong>${stepNames[type]}</strong></div>`;
+return;
+}
+if(type==='sujet'){
+fb.innerHTML=`<div style="background:#fdf2f8;border:1px solid #fbcfe8;border-radius:10px;padding:16px">
+<p style="font-size:13px;font-weight:700;color:#db2777;margin-bottom:10px">💡 Choisis le sujet</p>
+<div style="display:flex;flex-direction:column;gap:6px">
+<button class="btn btn-pkl" style="text-align:left;white-space:normal;padding:12px" onclick="pickNl(1,this)"><strong>1. L'écosystème Product Analytics en France</strong><br><span style="font-weight:400;font-size:11px;color:#888">Mapping, tendances, trous dans la raquette</span></button>
+<button class="btn btn-pkl" style="text-align:left;white-space:normal;padding:12px" onclick="pickNl(2,this)"><strong>2. La maturité data des scale-ups françaises</strong><br><span style="font-weight:400;font-size:11px;color:#888">Par stade, blocages, exemples</span></button>
+<button class="btn btn-pkl" style="text-align:left;white-space:normal;padding:12px" onclick="pickNl(3,this)"><strong>3. Product-Led vs Sales-Led : la data comme arbitre</strong><br><span style="font-weight:400;font-size:11px;color:#888">Comment les meilleures équipes tranchent</span></button>
+</div></div>`;
+} else if(type==='collect'){
+fb.innerHTML=`<div style="background:#fdf2f8;border:1px solid #fbcfe8;border-radius:10px;padding:16px;font-size:13px;color:#555">
+<strong style="color:#db2777">🔎 Collecte en cours — "${t.title}"</strong>
+<div style="margin-top:12px">
+<div id="coll-step1" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;opacity:.4"><div style="width:18px;height:18px;border-radius:50%;background:#fdf2f8;border:2px solid #db2777;display:flex;align-items:center;justify-content:center;font-size:10px" id="coll-dot1"></div><span>Glean — Verified Outcomes & Win Stories</span></div>
+<div id="coll-step2" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;opacity:.4"><div style="width:18px;height:18px;border-radius:50%;background:#fdf2f8;border:2px solid #db2777;display:flex;align-items:center;justify-content:center;font-size:10px" id="coll-dot2"></div><span>Granola — Transcripts meetings clients</span></div>
+<div id="coll-step3" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;opacity:.4"><div style="width:18px;height:18px;border-radius:50%;background:#fdf2f8;border:2px solid #db2777;display:flex;align-items:center;justify-content:center;font-size:10px" id="coll-dot3"></div><span>Web — Rapports & benchmarks</span></div>
+</div>
+<div style="background:#fdf2f8;border-radius:8px;height:6px;margin-top:10px;overflow:hidden"><div id="coll-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#db2777,#6d28d9);transition:width .5s ease;border-radius:8px"></div></div>
+<div id="coll-status" style="font-size:11px;color:#888;margin-top:6px">Démarrage...</div>
+</div>`;
+runCollectAnim();
+} else if(type==='write'){
+fb.innerHTML=`<div style="background:#fdf2f8;border:1px solid #fbcfe8;border-radius:10px;padding:16px;font-size:13px;color:#555">
+<strong style="color:#db2777">✏️ Rédaction en cours — "${t.title}"</strong>
+<div style="margin-top:10px">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:16px;height:16px;border:3px solid #db2777;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite"></div><span>L'agent structure le contenu à partir des données collectées...</span></div>
+</div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+setTimeout(()=>{
+fb.innerHTML=`<div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:10px;padding:14px;font-size:13px;color:#15803d"><strong>✅ Contenu rédigé !</strong> — 3 sections prêtes pour "${t.title}". Vérifie dans la preview à droite.</div>`;
+unlockNl(4,'75%','Contenu rédigé');updPrev('content');
+},2500);
+} else if(type==='proto'){
+const secs=t.sections.map(s=>`${s.icon} ${s.h}\n${s.p}`).join('\n\n');
+const prompt=`Crée une page web newsletter appelée "Le Radar" par Noumouké N'Diaye (Amplitude).
+
+DESIGN :
+- Style éditorial premium, minimaliste, fond blanc
+- Header : emoji 📡 + titre "Le Radar #1 — ${t.title}" + sous-titre "Product & Data, vu du terrain" + "Par Noumouké N'Diaye · Amplitude · Juin 2026"
+- Palette : violet (#6d28d9) en accent, texte sombre (#1e1b4b), fond blanc
+- Typo moderne sans-serif (Inter ou similaire)
+- Responsive mobile-first
+- Footer : lien de désinscription + "Le Pouls — Product & Data, vu du terrain"
+
+CONTENU (3 sections avec icônes) :
+
+${secs}
+
+CALL TO ACTION en bas :
+Bouton violet "Rejoindre Le Pouls" qui ouvre un formulaire email simple (prénom + email)
+
+Le ton est direct, terrain, sans jargon marketing. Pas de stock photos. Utilise des data visualizations simples (barres, pourcentages stylisés) pour illustrer les chiffres.`;
+fb.innerHTML=`<div style="background:#fdf2f8;border:1px solid #fbcfe8;border-radius:10px;padding:16px">
+<p style="font-size:13px;font-weight:700;color:#db2777;margin-bottom:10px">🎨 Prompt Lovable — ${t.title}</p>
+<p style="font-size:11px;color:#888;margin-bottom:8px">Modifie le prompt si besoin, puis clique "Envoyer à Lovable"</p>
+<textarea class="ta" id="lovable-prompt" style="min-height:200px;font-size:12px;line-height:1.6">${prompt}</textarea>
+<button class="btn btn-pk" style="margin-top:10px;width:100%;padding:14px;font-size:14px" onclick="sendToLovable()">🚀 Copier & ouvrir Lovable</button>
+</div>`;
+} else if(type==='outreach'){
+fb.innerHTML=`<div style="background:#fdf2f8;border:1px solid #fbcfe8;border-radius:10px;padding:14px;font-size:13px;color:#555"><strong style="color:#db2777">📧 Configuration Outreach</strong><br>L'agent va configurer l'envoi via Outreach :<br>→ Séquence dédiée "Le Pouls — ${t.title}"<br>→ Contacts importés depuis landing Lovable (opt-in) + LinkedIn<br>→ Envoi depuis ton adresse perso<br>→ Date d'envoi : 1er juin 2026<br><br>Écris dans le chat Cowork pour lancer la config.</div>`;
+setTimeout(()=>{
+nlStage=5;
+const num=document.querySelector('#ns5 .nl-n');num.classList.add('ok');num.textContent='✓';
+const ob=document.querySelector('#ns5 button');if(ob){ob.disabled=true;ob.className='btn btn-pkl';ob.style.background='#dcfce7';ob.style.color='#15803d';ob.style.border='1px solid #bbf7d0';ob.innerHTML='✓ Fait'}
+document.getElementById('nl-prog').style.width='100%';
+document.getElementById('nl-txt').textContent='100% — Newsletter prête !';
+updPrev('ready');
+},1500);
+}
+}
+
+function runCollectAnim(){
+const steps=[
+{id:1,delay:800,bar:'15%',status:'Recherche Glean en cours...'},
+{id:1,delay:2500,bar:'33%',status:'Glean ✓ — données récupérées',done:true},
+{id:2,delay:3200,bar:'45%',status:'Scan Granola en cours...'},
+{id:2,delay:5000,bar:'66%',status:'Granola ✓ — transcripts analysés',done:true},
+{id:3,delay:5800,bar:'78%',status:'Recherche web en cours...'},
+{id:3,delay:7500,bar:'100%',status:'Collecte terminée !',done:true,last:true}
+];
+steps.forEach(s=>{
+setTimeout(()=>{
+const step=document.getElementById('coll-step'+s.id);
+const dot=document.getElementById('coll-dot'+s.id);
+const bar=document.getElementById('coll-bar');
+const status=document.getElementById('coll-status');
+if(!step)return;
+step.style.opacity='1';
+bar.style.width=s.bar;
+status.textContent=s.status;
+if(s.done){dot.textContent='✓';dot.style.background='#db2777';dot.style.color='#fff'}
+else{dot.innerHTML='<div style="width:8px;height:8px;border:2px solid #db2777;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite"></div>'}
+if(s.last){
+setTimeout(()=>{
+const t=chosenNl?NL_TOPICS[chosenNl]:NL_TOPICS[1];
+document.getElementById('nl-fb').innerHTML='<div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:10px;padding:14px;font-size:13px;color:#15803d"><strong>✅ Collecte terminée !</strong><br>'+t.dataStats.replace(/\n/g,'<br>')+'</div>';
+unlockNl(3,'50%','Données collectées');updPrev('data');
+},1000);
+}
+},s.delay);
+});
+}
+
+function pickNl(n,btn){
+chosenNl=n;
+btn.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fdf2f8';b.style.color='#db2777';b.style.border='1px solid #fbcfe8';const sp=b.querySelectorAll('span');sp.forEach(s=>s.style.color='#888')});
+btn.style.background='#db2777';btn.style.color='#fff';btn.style.border='1px solid #db2777';
+btn.querySelectorAll('span').forEach(s=>s.style.color='#ffcce5');
+setTimeout(()=>{
+document.querySelector('#ns1 .nl-n').classList.add('ok');document.querySelector('#ns1 .nl-n').textContent='✓';
+unlockNl(2,'25%','Sujet choisi');updPrev('topic');
+},400);
+}
+
+function unlockNl(n,pct,txt){
+nlStage=n-1;
+const s=document.getElementById('ns'+n);s.style.opacity='1';
+const b=s.querySelector('button');if(b){b.disabled=false;b.className='btn btn-pk'}
+const prev=document.getElementById('ns'+(n-1));
+if(prev){const num=prev.querySelector('.nl-n');num.classList.add('ok');num.textContent='✓';
+const pb=prev.querySelector('button');if(pb){pb.disabled=true;pb.className='btn btn-pkl';pb.style.background='#dcfce7';pb.style.color='#15803d';pb.style.border='1px solid #bbf7d0';pb.innerHTML='✓ Fait'}}
+document.getElementById('nl-prog').style.width=pct;
+document.getElementById('nl-txt').textContent=pct+' — '+txt;
+}
+
+function updPrev(stage){
+const p=document.getElementById('nl-prev');p.style.alignItems='flex-start';
+const t=chosenNl?NL_TOPICS[chosenNl]:NL_TOPICS[1];
+const hdr=`<div style="text-align:center;margin-bottom:16px"><span style="font-size:28px">📡</span><h3 style="font-size:16px;color:#db2777;margin:6px 0 2px">Le Radar #1</h3><p style="font-size:12px;color:#888">${t.title}</p></div>`;
+const secHtml=t.sections.map(s=>`<p style="font-weight:700;margin:10px 0 6px">${s.icon} ${s.h}</p><p>${s.p}</p>`).join('');
+if(stage==='topic') p.innerHTML=`<div style="width:100%">${hdr}<div style="background:#fdf2f8;border-radius:8px;padding:14px;font-size:12px;color:#555"><strong style="color:#db2777">Sujet validé</strong><br>${t.sub}. Collecte en cours...</div></div>`;
+else if(stage==='data') p.innerHTML=`<div style="width:100%">${hdr}<div style="background:#fdf2f8;border-radius:8px;padding:14px;font-size:12px;color:#555"><strong style="color:#db2777">Données collectées</strong><br>${t.dataStats.replace(/\n/g,'<br>')}<br><br>En attente de rédaction...</div></div>`;
+else if(stage==='content') p.innerHTML=`<div style="width:100%"><div style="text-align:center;margin-bottom:16px"><span style="font-size:28px">📡</span><h3 style="font-size:16px;color:#db2777;margin:6px 0 2px">Le Radar #1</h3><p style="font-size:12px;color:#888">Noumouké N'Diaye · Amplitude · Juin 2026</p></div><div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:14px;font-size:12px;color:#444;line-height:1.7">${secHtml}</div></div>`;
+else if(stage==='proto') p.innerHTML=`<div style="width:100%"><div style="text-align:center;margin-bottom:16px"><span style="font-size:28px">🎨</span><h3 style="font-size:16px;color:#db2777;margin:6px 0 2px">Le Radar #1</h3><p style="font-size:12px;color:#888">Prototype en cours sur Lovable</p></div><div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:14px;font-size:12px;color:#444;line-height:1.7">${secHtml}</div><div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:8px;padding:10px;font-size:12px;color:#15803d;margin-top:8px;text-align:center;font-weight:600">✅ Contenu copié → Template Lovable en cours</div></div>`;
+else if(stage==='ready') p.innerHTML=`<div style="width:100%"><div style="text-align:center;margin-bottom:16px"><span style="font-size:28px">🚀</span><h3 style="font-size:16px;color:#db2777;margin:6px 0 2px">Le Radar #1</h3><p style="font-size:12px;color:#888">Noumouké N'Diaye · Amplitude · Juin 2026</p></div><div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:14px;font-size:12px;color:#444;line-height:1.7">${secHtml}</div><div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:8px;padding:12px;font-size:13px;color:#15803d;margin-top:10px;text-align:center"><strong>🚀 Newsletter prête !</strong><br>Proto Lovable ✓ · Outreach configuré ✓ · Envoi 1er juin 2026</div></div>`;
+}
+
+// ── LINKEDIN DATA ──
+const POSTS=[
+[{author:'Stephane Delbecque',role:'Portfolio CPO & AI Officer',linkedin:'https://www.linkedin.com/in/sdelbecque/',activity:'https://www.linkedin.com/in/sdelbecque/recent-activity/all/',body:"Etre CPO fractionné, ce n'est pas faire plusieurs jobs en même temps.\n\nC'est changer de monde tous les deux jours, et être entier dans chacun.\n\nDans ce modèle, chaque client a droit à une présence entière, pas à des restes.\nMais le cerveau, lui, ne sait pas forcément que le contexte a changé...\n\nLe \"switch cost\" — le coût cognitif de chaque changement de contexte.\nJusqu'à 40% de perte de capacité sur des tâches complexes.\n\n3 choses pour mieux gérer :\n1. Ritualiser la transition de fin de journée\n2. Planifier le temps de chauffe\n3. Ne jamais mélanger les contextes\n\n#Product #CPO #Leadership",comment:"Le switch cost est un sujet trop peu adressé, surtout pour les leaders produit qui jonglent entre stratégie et exécution. La ritualisation de la transition — c'est un game changer. Vous mesurez l'impact côté delivery ?"},
+{author:'June Dershewitz',role:'Data Leader & Angel Investor',linkedin:'https://www.linkedin.com/in/jdersh/',activity:'https://www.linkedin.com/in/jdersh/recent-activity/all/',body:"Here's a pattern I've seen: companies hire scientists to do analyst work.\n\nThey get buried in dashboards instead of doing the deep analytical work they were hired for.\n\nThe fix: separate the \"reporting\" function from the \"insight\" function.\n\nReporting = automated, self-serve, democratized.\nInsight = human, deep, strategic.\n\nWhen you blur these lines, you waste your best analytical talent.\n\n#Data #ProductAnalytics #Analytics",comment:"This resonates deeply — the reporting vs insight distinction is what separates good analytics orgs from great ones. How do you see AI changing this dynamic, especially for self-serve analytics?"},
+{author:'Emmanuel Vivier',role:'Cofondateur @ HUB Institute',linkedin:'https://www.linkedin.com/in/emmanuelvivier/',activity:'https://www.linkedin.com/in/emmanuelvivier/recent-activity/all/',body:"Anthropic Claude publie 100 innovations en 60 jours — et met ChatGPT / OpenAI sous pression.\n\nAprès ChatGPT et Gemini, c'est Anthropic Claude qui prend le lead en IA depuis 2 mois.\n\nVoici une synthèse de plus de 100 innovations, produit par produit.\n\nLe rythme d'innovation n'a jamais été aussi élevé.\n\n#IA #AI #Innovation",comment:"L'accélération est impressionnante — côté analytics produit, l'IA change complètement la donne. Les équipes qui n'intègrent pas l'IA dans leur stack analytics vont vite décrocher. Quel impact voyez-vous sur les métiers data ?"}],
+[{author:'Sergii Sokoliuk',role:'Growth Analytics & Insights Leader',linkedin:'https://www.linkedin.com/in/sokoliuk/',activity:'https://www.linkedin.com/in/sokoliuk/recent-activity/all/',body:"Companies spend $500K+/year on analytics and still make gut decisions.\n\nHere's why: the gap isn't in the data. It's in the decision layer.\n\nMost analytics teams deliver great dashboards. But dashboards don't make decisions — people do.\n\nThe fix: AI can become your Data Analyst in one prompt. But the real value is in building a data-driven decision framework.\n\nStop measuring everything. Start measuring what matters.\n\n#ProductAnalytics #DataDriven #Growth",comment:"The decision layer gap — so true. On voit beaucoup d'équipes avec des stacks analytics matures mais une culture de décision encore intuitive. L'IA peut accélérer ça, mais le framework humain reste clé."},
+{author:'Cyril Jamot',role:'Co-Founder @ ARCHIPEL Foundation',linkedin:'https://www.linkedin.com/in/cyril-jamot/',activity:'https://www.linkedin.com/in/cyril-jamot/recent-activity/all/',body:"Qui maîtrise la data maîtrise l'IA.\n\nUn agent sur données mal structurées produit des résultats qui semblent cohérents mais sont faux. Ce qu'on appelle des hallucinations.\n\nLes organisations qui lancent des projets IA sans gouvernance data finissent par conclure que \"l'IA ne fonctionne pas pour nous.\"\n\nAlors que le problème n'est jamais la technologie. C'est la qualité de ce qui entre.\n\n#Data #IA #Analytics",comment:"\"Le problème n'est jamais la technologie, c'est la qualité de ce qui entre\" — c'est exactement le message qu'on porte côté Product Analytics. Garbage in, garbage out. Avez-vous des exemples de gouvernance data qui fonctionnent vraiment en pratique ?"},
+{author:'Gaetan Loubiere',role:'Fondateur @ ZoneMentale',linkedin:'https://www.linkedin.com/in/gaetan-loubiere-50a748158/',activity:'https://www.linkedin.com/in/gaetan-loubiere-50a748158/recent-activity/all/',body:"En 2026, les SaaS ne perdent pas face à de meilleurs produits.\n\nIls perdent face à une meilleure distribution.\n\nLe produit est une condition nécessaire mais plus suffisante. La distribution est le vrai avantage compétitif.\n\nLes meilleurs SaaS combinent Product-Led Growth + Content + Communauté.\n\nEt mesurent tout : activation, rétention, virality loops.\n\n#SaaS #Growth #Distribution",comment:"La distribution comme avantage compétitif numéro 1 — totally agree. Et la data est le liant entre PLG, contenu et communauté. Comment voyez-vous le rôle de l'analytics dans cette boucle ?"}],
+[{author:'Astha Dubey',role:'Product & Analytics Leader',linkedin:'https://www.linkedin.com/in/astha-dubey-50057536/',activity:'https://www.linkedin.com/in/astha-dubey-50057536/recent-activity/all/',body:"Agentic AI is not just the next step in AI — it's the next step in Product Analytics.\n\nWe're moving from dashboards that inform to agents that act.\n\nFor years, Product Analytics helped us answer: What happened? Why?\nWith Agentic AI, we can now ask: What should we do next — and can you do it?\n\nReal-Time Funnel Recovery, Adaptive Onboarding, Self-Optimizing Experiments...\n\nProduct teams are drowning in dashboards but starving for decisions.\n\n#ProductAnalytics #AgenticAI #Data",comment:"Le shift de 'dashboards that inform' à 'agents that act' — c'est exactement la prochaine vague en analytics produit. Chez Amplitude, on explore cette direction. Quel est le premier use case que vous automatiseriez ?"},
+{author:'Opeyemi Ogunsola',role:'Strategy & Operations | Analytics',linkedin:'https://www.linkedin.com/in/opeyemi-ogunsola/',activity:'https://www.linkedin.com/in/opeyemi-ogunsola/recent-activity/all/',body:"Your KPI dashboard isn't a sign of rigor.\n\nIn most cases, it's a sign of unresolved strategic ambiguity.\n\nWhen the direction isn't clear, everything feels worth measuring. So the metrics multiply until the dashboard is full and the focus is gone.\n\nIf everything is measured, nothing is prioritized.\n\nI break down why KPI overload happens and a practical framework for cutting down to the metrics that actually matter.\n\n#Analytics #Strategy #KPI",comment:"KPI overload is one of the most common patterns we see — teams measuring 50+ events but acting on none. The framework for cutting down to what matters is key. What's your rule of thumb for identifying the 3-5 metrics that truly predict outcomes?"},
+{author:'Edu Rigonato',role:'Co-founder @ Taurist',linkedin:'https://www.linkedin.com/in/edurigonato/',activity:'https://www.linkedin.com/in/edurigonato/recent-activity/all/',body:"The difference between thriving SaaS companies and struggling ones often comes down to one critical factor: how quickly new users experience value.\n\nPersonalized onboarding paths based on user personas boost conversion dramatically.\nReducing time-to-value is non-negotiable.\nCombining session recordings with traditional analytics uncovers the 'why' behind behavior.\n\nA/B testing isn't optional anymore. It's the foundation of data-driven onboarding optimization.\n\n#SaaS #Onboarding #ProductGrowth",comment:"Time-to-value comme métrique clé de l'onboarding — c'est un sujet qu'on adresse beaucoup en product analytics. La combinaison session replays + analytics quantitatives est effectivement un game changer. Quel outil de session recording utilisez-vous ?"}],
+[{author:'Abinash Somani',role:'Product & Growth Analytics @ Cars24',linkedin:'https://www.linkedin.com/in/abinash-somani-94569498/',activity:'https://www.linkedin.com/in/abinash-somani-94569498/recent-activity/all/',body:"Day 6 — Product Analytics Post\n\nProduct success is rarely measured correctly.\n\nTracking downloads or active users is table stakes. Real product analytics means understanding the WHY behind behavior.\n\nThe best teams focus on:\n→ Activation funnels by cohort\n→ Feature adoption vs. retention correlation\n→ Revenue attribution per feature\n\nData tells stories if you ask the right questions.\n\n#ProductAnalytics #CustomerExperience",comment:"La corrélation feature adoption vs retention — c'est un des angles les plus puissants en product analytics. Peu d'équipes mesurent le lien entre l'usage d'une feature et la rétention. Comment structurez-vous cette analyse chez Cars24 ?"},
+{author:'Amanda Gaffney',role:'Manager Product Analytics & Strategy',linkedin:'https://www.linkedin.com/in/amandalynngaffney/',activity:'https://www.linkedin.com/in/amandalynngaffney/recent-activity/all/',body:"Great news — we're hiring a Product Data Analyst!\n\nThis team member will be critical to expanding our data-driven product culture.\n\nWhat I look for in a Product Analyst:\n→ Curiosity about user behavior, not just SQL skills\n→ Ability to translate data into decisions\n→ Comfort with ambiguity and experimentation\n→ A bias toward action, not just reports\n\nThe best analysts don't just answer questions. They find the questions worth asking.\n\n#ProductAnalytics #Hiring #Data",comment:"'Find the questions worth asking' — this perfectly describes the evolution from reporting to insight. The best product analysts are essentially strategic partners, not dashboard builders. What's the most impactful question an analyst has surfaced for your team?"},
+{author:'Ryan N. Bennett',role:'SaaS Growth & Retention Expert',linkedin:'https://www.linkedin.com/in/ryanbennett/',activity:'https://www.linkedin.com/in/ryanbennett/recent-activity/all/',body:"How do you prevent churn risk before it starts?\n\nStop looking at lagging indicators. By the time you see churn in your metrics, it's already too late.\n\nThe leading indicators that predict churn 30-60 days before it happens:\n→ Feature usage decline over 2 weeks\n→ Support ticket sentiment shift\n→ Login frequency drop vs. cohort baseline\n→ Champion user disengagement\n\nProtect recurring revenue with proactive analytics, not reactive dashboards.\n\n#SaaS #Churn #Retention",comment:"Les leading indicators de churn — c'est un sujet central en product analytics. Le 'champion user disengagement' est un signal fascinant. On voit de plus en plus d'équipes utiliser des health scores composites. Quel est votre framework pour pondérer ces signaux ?"}],
+[{author:'Suyash Thakur',role:'Founder @ Pictify | Software @ Storylane',linkedin:'https://www.linkedin.com/in/suyashthakur/',activity:'https://www.linkedin.com/in/suyashthakur/recent-activity/all/',body:"Most founders don't have an analytics problem.\nThey have a 'too painful to query' problem.\n\nI ran an AI-powered audit on my product analytics. It found multiple leaks in under 30 minutes.\n\nNo SQL. No dashboards. No exporting CSVs.\n\nJust one prompt: Audit my activation funnel and find what's broken.\n\nOld world: You ask for charts.\nNew world: You ask what's broken.\n\nEvery analytics tool is about to become more valuable — because agents can finally operate them.\n\n#ProductAnalytics #AI #Growth",comment:"'You ask what's broken' — c'est exactement le paradigme shift qu'on construit en product analytics. L'IA transforme l'analytics d'un outil passif en un agent proactif. Quel stack analytics utilisez-vous pour ces audits automatisés ?"},
+{author:'Michel Lulev',role:'Transformation Numérique, IA & Stratégie',linkedin:'https://www.linkedin.com/in/michel-lulev/',activity:'https://www.linkedin.com/in/michel-lulev/recent-activity/all/',body:"Marché de l'emploi 2026 : entre ralentissement macroéconomique et forte demande de compétences IA.\n\nLe paradoxe : les entreprises réduisent les budgets mais accélèrent les projets data et IA.\n\nLes compétences les plus recherchées :\n→ Product Analytics & Data Engineering\n→ AI/ML appliqué au produit\n→ Growth hacking data-driven\n\nLa data n'est plus un support. C'est le moteur de la stratégie.\n\n#IA #Emploi #Data #Transformation",comment:"Le paradoxe budget vs accélération IA — on le vit au quotidien côté analytics. Les entreprises qui investissent maintenant en product analytics prennent une avance considérable. Comment voyez-vous l'évolution des profils data dans les 2 prochaines années ?"},
+{author:'Tanmay Nagdeve',role:'Data Analyst | Power BI & SQL',linkedin:'https://www.linkedin.com/in/tanmaynagdeve18/',activity:'https://www.linkedin.com/in/tanmaynagdeve18/recent-activity/all/',body:"I built a Cohort Analysis Dashboard to deeply understand user lifecycle and engagement patterns.\n\nKey insights:\n→ High engagement at activation (M0), sharp drop in M1+\n→ Low churn but declining conversion — users present but not transacting\n→ Charging frequency drops over time — engagement gap post-onboarding\n\nInitial onboarding is strong but long-term engagement needs improvement.\nOpportunity to introduce retention strategies after M1.\n\n#CohortAnalysis #Analytics #DataScience",comment:"L'analyse par cohorte est un des outils les plus puissants en product analytics — le drop M0→M1 que vous identifiez est un pattern classique. C'est exactement là que l'activation bien mesurée fait la différence. Quelles rétention strategies avez-vous testées post-M1 ?"}]
+];
+
+const CX=[
+[{name:'Stephane Delbecque',role:'Portfolio CPO & AI Officer',linkedin:'https://www.linkedin.com/in/sdelbecque/',note:"Bonjour Stephane, je suis vos posts sur le Product Management avec attention — votre regard de CPO fractionné est rafraîchissant. Je travaille côté Product Analytics chez Amplitude, j'aimerais échanger sur les sujets data & produit. Au plaisir !"},
+{name:'June Dershewitz',role:'Data Leader & Angel Investor',linkedin:'https://www.linkedin.com/in/jdersh/',note:"Hi June, I follow your Measurecraft newsletter closely — the reporting vs insight distinction really resonates. I work in Product Analytics at Amplitude and would love to connect and exchange ideas!"},
+{name:'Sergii Sokoliuk',role:'Growth Analytics & Insights Leader',linkedin:'https://www.linkedin.com/in/sokoliuk/',note:"Hi Sergii, your posts on growth analytics and the decision layer gap are spot on. Working in Product Analytics at Amplitude, I'd love to connect and exchange on data-driven growth!"}],
+[{name:'Emmanuel Vivier',role:'Cofondateur @ HUB Institute',linkedin:'https://www.linkedin.com/in/emmanuelvivier/',note:"Bonjour Emmanuel, vos analyses sur l'IA et la transformation digitale sont précieuses. Je travaille chez Amplitude côté analytics produit et j'observe les mêmes tendances. Au plaisir d'échanger !"},
+{name:'Cyril Jamot',role:'Co-Founder @ ARCHIPEL Foundation',linkedin:'https://www.linkedin.com/in/cyril-jamot/',note:"Bonjour Cyril, votre post sur data et IA m'a interpellée — la qualité des données comme prérequis à l'IA, c'est exactement ce qu'on observe côté analytics. Ravie de rejoindre votre réseau !"},
+{name:'Gaetan Loubiere',role:'Fondateur @ ZoneMentale',linkedin:'https://www.linkedin.com/in/gaetan-loubiere-50a748158/',note:"Bonjour Gaetan, votre analyse sur la distribution SaaS et le PLG rejoint mes convictions côté product analytics. Au plaisir d'échanger sur le lien entre data et croissance !"}],
+[{name:'Astha Dubey',role:'Product & Analytics Leader',linkedin:'https://www.linkedin.com/in/astha-dubey-50057536/',note:"Hi Astha, your post on Agentic AI in Product Analytics really resonated — I work at Amplitude and this is exactly the future we're building toward. Would love to connect and exchange on the topic!"},
+{name:'Opeyemi Ogunsola',role:'Strategy & Operations | Analytics',linkedin:'https://www.linkedin.com/in/opeyemi-ogunsola/',note:"Hi Opeyemi, your Strategos newsletter on KPI overload is one of the clearest takes on analytics focus I've read. Working in Product Analytics at Amplitude, I see this pattern daily. Let's connect!"},
+{name:'Edu Rigonato',role:'Co-founder @ Taurist',linkedin:'https://www.linkedin.com/in/edurigonato/',note:"Hi Edu, your insights on SaaS onboarding and time-to-value are spot on. I work in Product Analytics at Amplitude and onboarding optimization is a key use case. Would love to exchange ideas!"}],
+[{name:'Abinash Somani',role:'Product & Growth Analytics @ Cars24',linkedin:'https://www.linkedin.com/in/abinash-somani-94569498/',note:"Hi Abinash, your Product Analytics daily posts are a great initiative — the feature adoption vs retention angle is particularly valuable. I work at Amplitude on these exact topics. Let's connect!"},
+{name:'Amanda Gaffney',role:'Manager Product Analytics & Strategy',linkedin:'https://www.linkedin.com/in/amandalynngaffney/',note:"Hi Amanda, love your approach to building data-driven product culture. At Amplitude, we're passionate about empowering product analytics teams. Would love to connect and share perspectives!"},
+{name:'Ryan N. Bennett',role:'SaaS Growth & Retention Expert',linkedin:'https://www.linkedin.com/in/ryanbennett/',note:"Hi Ryan, your framework for predicting churn with leading indicators is really practical. I work in Product Analytics at Amplitude and retention analytics is a hot topic for our clients. Let's connect!"}],
+[{name:'Suyash Thakur',role:'Founder @ Pictify | Storylane',linkedin:'https://www.linkedin.com/in/suyashthakur/',note:"Hi Suyash, your post on AI-powered product analytics audits is fascinating — 'you ask what's broken' captures the future perfectly. I work at Amplitude where we're exploring similar AI-native approaches. Let's connect!"},
+{name:'Michel Lulev',role:'Transformation Numérique, IA & Stratégie',linkedin:'https://www.linkedin.com/in/michel-lulev/',note:"Bonjour Michel, votre analyse du marché de l'emploi et des compétences data/IA est très pertinente. Je travaille chez Amplitude en Product Analytics et je partage cette vision. Au plaisir d'échanger !"},
+{name:'Tanmay Nagdeve',role:'Data Analyst | Power BI & SQL',linkedin:'https://www.linkedin.com/in/tanmaynagdeve18/',note:"Hi Tanmay, your cohort analysis dashboard project is impressive — the M0-M1 drop pattern you identified is a classic product analytics challenge. Working at Amplitude, I'd love to connect and discuss retention strategies!"}]
+];
+
+function renderPosts(){
+const el=document.getElementById('li-posts');
+el.innerHTML=POSTS[postSet].map((p,i)=>{
+return `<div class="li-post">
+<div style="display:flex;justify-content:space-between;align-items:center"><div class="li-author">${p.author}</div><a href="${p.activity}" target="_blank" style="font-size:11px;color:#6d28d9;text-decoration:none;font-weight:600">🔗 Voir ses posts</a></div>
+<div class="li-role">${p.role}</div>
+<div class="li-body">${p.body}</div>
+<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:#6d28d9;margin-bottom:4px">💬 Mon commentaire :</div>
+<textarea class="ta" id="comment-${postSet}-${i}" style="min-height:60px">${p.comment}</textarea></div>
+<div class="btn-row"><button class="btn btn-s" onclick="copyTa('comment-${postSet}-${i}',this)">📋 Copier</button><button class="btn btn-g" onclick="commentAndOpen(${postSet},${i},this)">💬 Commenter</button></div>
+</div>`}).join('');
+document.getElementById('li-set-label').textContent='Set '+(postSet+1)+'/'+POSTS.length;
+}
+
+function renderCx(){
+const el=document.getElementById('li-cx');
+el.innerHTML=CX[cxSet].map((c,i)=>{
+return `<div class="card" style="padding:16px;margin-bottom:10px">
+<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:14px;font-weight:700">${c.name}</div><a href="${c.linkedin}" target="_blank" style="font-size:11px;color:#16a34a;text-decoration:none;font-weight:600">🔗 Profil LinkedIn</a></div>
+<div style="font-size:12px;color:#888;margin-bottom:8px">${c.role}</div>
+<div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:4px">📝 Note de connexion :</div>
+<textarea class="ta" id="note-${cxSet}-${i}" style="min-height:50px">${c.note}</textarea>
+<div class="btn-row" style="margin-top:8px"><button class="btn btn-s" onclick="copyTa('note-${cxSet}-${i}',this)">📋 Copier</button><button class="btn btn-g" onclick="connectAndOpen(${cxSet},${i},this)">🤝 Ajouter</button></div>
+</div>`}).join('');
+document.getElementById('cx-set-label').textContent='Set '+(cxSet+1)+'/'+CX.length;
+}
+
+function cyclePosts(){postSet=(postSet+1)%POSTS.length;renderPosts()}
+function cycleCx(){cxSet=(cxSet+1)%CX.length;renderCx()}
+
+// ── SPARKS ──
+const SPARKS=[
+{text:"40% des scale-ups ne dépassent pas l'onboarding analytics",src:"Glean VO",srcUrl:"Glean",cat:"interne",pillar:"terrain",hot:true},
+{text:"Coût caché d'un mauvais funnel : chiffre verified outcome €2.3M/an",src:"Glean VO",srcUrl:"Glean",cat:"interne",pillar:"terrain",hot:true},
+{text:"Les équipes Product sous-utilisent l'expérimentation A/B",src:"Granola",srcUrl:"Granola",cat:"interne",pillar:"tendance",hot:false},
+{text:"Pourquoi personne ne consulte les dashboards qu'on construit",src:"Meeting client",srcUrl:"Granola",cat:"interne",pillar:"terrain",hot:false},
+{text:"Gartner : 65% des organisations augmentent leur budget Product Analytics en 2026",src:"Gartner Report",srcUrl:"Google Trends",cat:"externe",pillar:"tendance",hot:true},
+{text:"Product-led growth : les entreprises PLG ont un CAC 30% inférieur",src:"OpenView 2026",srcUrl:"Google Trends",cat:"externe",pillar:"tendance",hot:false},
+{text:"Post viral de Lenny Rachitsky sur les metrics d'activation : 15k likes",src:"LinkedIn",srcUrl:"LinkedIn",cat:"social",pillar:"tendance",hot:false},
+{text:"Ce que l'AI Week m'apprend sur l'adoption des outils",src:"Vécu personnel",srcUrl:"",cat:"interne",pillar:"bts",hot:false}
+];
+
+function renderSparks(filter){
+const el=document.getElementById('sparks-list');
+const filtered=filter==='all'?SPARKS:SPARKS.filter(s=>s.cat===filter);
+el.innerHTML=filtered.map(s=>{
+const pillarColors={terrain:'#6d28d9',tendance:'#0891b2',bts:'#d97706'};
+return `<div class="spark${s.hot?' hot':''}">
+<div style="flex:1">
+<div style="font-size:13px;color:#333;margin-bottom:4px">${s.text}</div>
+<div style="display:flex;gap:8px;align-items:center">
+${s.srcUrl?`<span class="spark-src" onclick="copyFaq('Montre-moi le détail de la source ${s.src} : ${s.text.substring(0,50)}')">${s.src} ↗</span>`:`<span style="font-size:11px;color:#aaa">${s.src}</span>`}
+<span class="spark-tag" style="background:${pillarColors[s.pillar]||'#888'}22;color:${pillarColors[s.pillar]||'#888'}">${s.pillar}</span>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+${s.hot?'<span style="font-size:10px;font-weight:700;background:#fef3c7;color:#b45309;padding:2px 7px;border-radius:4px;text-align:center">HOT</span>':''}
+<button class="btn btn-s" style="padding:4px 8px;font-size:10px" onclick="copyFaq('Transforme ce spark en post LinkedIn : ${s.text.replace(/'/g,"\\'")}')">💡 Post</button>
+<button class="btn btn-pkl" style="padding:4px 8px;font-size:10px" onclick="copyFaq('Utilise ce spark pour Le Pouls : ${s.text.replace(/'/g,"\\'")}')">📬 Pouls</button>
+</div></div>`}).join('');
+if(!filtered.length) el.innerHTML='<div style="padding:20px;text-align:center;color:#aaa;font-size:13px">Aucun spark dans cette catégorie</div>';
+}
+
+function filterSparks(cat,el){
+document.querySelectorAll('.fil').forEach(f=>f.classList.remove('active'));
+el.classList.add('active');
+renderSparks(cat);
+}
+
+// ── XP ──
+function addXP(n){
+XP+=n;
+let lvl='🌱 Éclaireur',emoji='🌱',nextLvl=200;
+if(XP>=1000){lvl='⭐ Leader d\'opinion';emoji='⭐';nextLvl=1000}
+else if(XP>=500){lvl='🌳 Influenceur';emoji='🌳';nextLvl=1000}
+else if(XP>=200){lvl='🌿 Contributeur';emoji='🌿';nextLvl=500}
+// Nav
+document.getElementById('nav-xp').textContent='⭐ '+XP+' XP';
+document.getElementById('nav-lvl').textContent=lvl;
+// Suivi — ring
+const dayXpEl=document.getElementById('day-xp');
+if(dayXpEl){const cur=parseInt(dayXpEl.textContent)||0;dayXpEl.textContent=cur+n}
+const pct=Math.min(100,Math.round((XP/nextLvl)*100));
+const ringPct=document.getElementById('ring-pct');if(ringPct)ringPct.textContent=pct;
+const ringC=document.getElementById('ring-c');if(ringC){const off=239-(239*pct/100);ringC.setAttribute('stroke-dashoffset',off)}
+// Suivi — level
+const lvlD=document.getElementById('lvl-display');if(lvlD)lvlD.textContent=lvl.replace(/^[^\s]+ /,'');
+const lvlB=document.getElementById('lvl-bar');if(lvlB)lvlB.style.width=Math.round((XP/nextLvl)*100)+'%';
+}
+
+// ── FAQ ──
+function toggleFaq(){document.getElementById('faq-panel').classList.toggle('open')}
+function copyFaq(txt){
+navigator.clipboard.writeText(txt).then(()=>{
+const t=document.getElementById('faq-toast');t.style.display='block';
+setTimeout(()=>t.style.display='none',2000);
+});
+}
+
+// ── UTILS ──
+function markBtn(btn,txt){btn.textContent=txt;btn.style.background='#dcfce7';btn.style.color='#16a34a';btn.style.border='1px solid #bbf7d0';btn.disabled=true}
+function copyTa(id,btn){
+const t=document.getElementById(id);
+navigator.clipboard.writeText(t.value).then(()=>{const o=btn.innerHTML;btn.innerHTML='✅ Copié !';setTimeout(()=>btn.innerHTML=o,1500)});
+}
+function copyText(btn,txt){navigator.clipboard.writeText(txt).then(()=>{const o=btn.innerHTML;btn.innerHTML='✅ Copié !';setTimeout(()=>btn.innerHTML=o,1500)})}
+
+function showToast(msg){
+let t=document.getElementById('global-toast');
+if(!t){t=document.createElement('div');t.id='global-toast';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e1b4b;color:#fff;padding:14px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.2);transition:opacity .3s;text-align:center;max-width:420px';document.body.appendChild(t)}
+t.innerHTML=msg;t.style.opacity='1';t.style.display='block';
+setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.style.display='none',300)},3500);
+}
+
+function commentAndOpen(set,idx,btn){
+const ta=document.getElementById('comment-'+set+'-'+idx);
+const post=POSTS[set][idx];
+navigator.clipboard.writeText(ta.value).then(()=>{
+showToast('💬 Commentaire copié !<br><span style="font-size:12px;font-weight:400;opacity:.8">LinkedIn s\'ouvre → trouve le post de '+post.author+' et colle ton commentaire</span>');
+window.open(post.activity,'_blank');
+markBtn(btn,'✅ Commenté +10XP');
+addXP(10);
+});
+}
+
+function sendToLovable(){
+const prompt=document.getElementById('lovable-prompt').value;
+navigator.clipboard.writeText(prompt).then(()=>{
+showToast('🚀 Prompt copié !<br><span style="font-size:12px;font-weight:400;opacity:.8">Lovable s\'ouvre → colle le prompt dans le champ de création</span>');
+window.open('https://lovable.dev/projects/create','_blank');
+document.getElementById('nl-fb').innerHTML='<div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:10px;padding:14px;font-size:13px;color:#15803d"><strong>✅ Prompt envoyé à Lovable</strong><br>Colle-le dans le champ de création. Une fois le proto prêt, passe à l\'étape 5.</div>';
+unlockNl(5,'90%','Proto Lovable lancé');updPrev('proto');
+});
+}
+
+function connectAndOpen(set,idx,btn){
+const ta=document.getElementById('note-'+set+'-'+idx);
+const cx=CX[set][idx];
+navigator.clipboard.writeText(ta.value).then(()=>{
+showToast('🤝 Note copiée !<br><span style="font-size:12px;font-weight:400;opacity:.8">LinkedIn s\'ouvre → clique "Se connecter" sur le profil de '+cx.name+' et colle la note</span>');
+window.open(cx.linkedin,'_blank');
+markBtn(btn,'✅ Ajoutée +5XP');
+addXP(5);
+});
+}
+
+// ── INIT ──
+renderPosts();renderCx();renderSparks('all');
+</script>
+</body>
+</html>
